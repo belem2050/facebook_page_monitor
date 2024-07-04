@@ -10,8 +10,8 @@ class FacebookPageMonitor:
         self.graph = facebook.GraphAPI(page_access_token)
 
     
-    def post_message(self, page_id, msg):
-        self.graph.put_object(parent_object=page_id, connection_name='feed', message=msg)
+    def post_message(self, page_id, connection_name, msg):
+        self.graph.put_object(parent_object=page_id, connection_name=connection_name, message=msg)
 
     def comment_post(self, post_id, msg):
         self.graph.put_comment(object_id=post_id, message=msg)
@@ -29,8 +29,8 @@ class FacebookPageMonitor:
 
         return pages
     
-    def fetch_posts_ids(self):
-        posts = self.graph.get_connections(id='me', connection_name='posts')
+    def fetch_posts_ids(self, connection_name): # connection names: 'posts', 'photos', 'videos', 'events'
+        posts = self.graph.get_connections(id='me', connection_name=connection_name)
 
         return posts
 
@@ -41,9 +41,9 @@ def main():
     page_id = monitor.fetch_page_ids('me')['id']
     
     message = 'There we go, I am posting from a python script to be found on Github'
-    monitor.post_message(page_id, message)
+    monitor.post_message(page_id, 'feed',  message)
 
-    post_id = monitor.fetch_posts_ids()['data'][0]['id'] # JUst to get the latest post
+    post_id = monitor.fetch_posts_ids('posts')['data'][0]['id'] # JUst to get the latest post
     comment_message = 'A comment from again my python script!\n Life is Great'
     monitor.comment_post(post_id, comment_message)
 
